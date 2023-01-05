@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
+from sklearn import linear_model
 
 DELIMETER = ";"
 DECIMAL = ","
@@ -12,33 +13,43 @@ def log_return(file_path: str):
     stock["Closing price"] = stock["Closing price"].diff(periods=-1)
     return stock.dropna()
 
-omxhpi = log_return(r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\OMXHPI.csv')
-siili_solutions = log_return(r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\SIILI-2022-01-05-2023-01-05.csv')
+def linear_regression(log_returns_X: pd.DataFrame, log_returns_y: pd.DataFrame):
+    log_returns_X_y = log_returns_X.merge(log_returns_y, how='inner', on='Date')
+    X = np.array(log_returns_X_y["Closing price_x"]).reshape(-1,1)
+    y = np.array(log_returns_X_y["Closing price_y"])
 
-index_and_stock_log_returns = omxhpi.merge(siili_solutions, how='inner', on='Date')
+    reg = linear_model.LinearRegression()
+    reg.fit(X,y)
 
-from sklearn import linear_model
+    residuals = y - reg.predict(X)
 
-X = index_and_stock_log_returns['Closing price_x']
-X = np.array(X).reshape(-1,1)
-y = index_and_stock_log_returns['Closing price_y']
-y = np.array(y)
+    return (reg.coef_[0], reg.intercept_, residuals)
 
-reg = linear_model.LinearRegression()
-reg.fit(X,y)
-print(reg.score(X,y))
-print(reg.coef_)
-print(reg.intercept_)
+class Stock:
+    def __init__(self, file_path: str):
+        self.name = file_path.split("'\'")[-1]
+        self.log_returns = log_return(file_path)
+        self.coef = 1
+        self.intercept = 0
+        self.residuals = np.array([0])
+    
+    def linear_reggression(self, other_stock):
+        self.coef, self.intercept, self.residuals = linear_regression(other_stock.log_returns, 
+                                                                      self.log_returns)
 
-y_pred = reg.predict(X)
 
-figure, axis = plt.subplots(1,2)
 
-axis[0].scatter(X,y)
-axis[0].plot(X, y_pred)
+omxhpi = Stock(r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\OMXHPI.csv')
+siili_solutions = Stock(r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\SIILI-2022-01-05-2023-01-05.csv')
 
-residual = y-y_pred
+siili_solutions.linear_reggression(omxhpi)
+print(siili_solutions.residuals)
 
-axis[1].hist(residual)
+print(siili_solutions.coef)
+print(siili_solutions.intercept)
+
+figure, axis = plt.subplots(1,1)
+
+axis.hist(siili_solutions.residuals)
 
 plt.show()
