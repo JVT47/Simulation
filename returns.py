@@ -2,20 +2,21 @@ import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 
-omxhpi = pd.read_csv(r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\OMXHPI.csv',
-                     delimiter=";",
-                     decimal=",")
-omxhpi = omxhpi[["Päätös"]]
+DELIMETER = ";"
+DECIMAL = ","
 
-ln_omxhpi = np.log(omxhpi)
+def log_return(file_path: str):
+    stock = pd.read_csv(file_path, delimiter=DELIMETER, decimal=DECIMAL)
+    stock = stock[["Pvä", "Päätös"]]
+    stock["Päätös"] = stock["Päätös"].apply(np.log)
+    stock["Päätös"] = stock["Päätös"].diff(periods=-1)
+    return stock
 
-log_return_omxhpi = ln_omxhpi.diff(periods=-1)
+omxhpi = log_return(r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\OMXHPI.csv')
 
 print(omxhpi.head())
-print(ln_omxhpi.head())
-print(log_return_omxhpi.head())
 
 fig, ax = plt.subplots()
-ax.hist(log_return_omxhpi)
+ax.hist(omxhpi)
 
 plt.show()
