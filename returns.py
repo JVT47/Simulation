@@ -3,6 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from sklearn import linear_model
 import os
+import pickle
 
 DELIMETER = ";"
 DECIMAL = ","
@@ -43,12 +44,16 @@ omxhpi = Stock(r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\OMXHP
 
 stock_list = []
 directory = r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data'
+
 for file in os.listdir(directory):
     if file != "OMXHPI.csv":
         file_path = os.path.join(directory,file)
         stock = Stock(file_path)
         stock.linear_reggression(omxhpi)
         stock_list.append(stock)
+        
+with open("StockObjects.dat", 'wb') as f:
+    pickle.dump(stock_list, f)
 
 for n, stock in enumerate(stock_list):
     ax = plt.subplot(2,2,n+1)
