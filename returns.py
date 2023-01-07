@@ -40,19 +40,18 @@ class Stock:
                                                                       self.log_returns)
 
 
-omxhpi = Stock(r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\OMXHPI.csv')
+omxhpi = Stock(r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\Index\OMXHPI.csv')
 
 stock_list = []
-directory = r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data'
-
+directory = r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\Stocks'
 for file in os.listdir(directory):
-    if file != "OMXHPI.csv":
-        file_path = os.path.join(directory,file)
-        stock = Stock(file_path)
-        stock.linear_reggression(omxhpi)
-        stock_list.append(stock)
+    file_path = os.path.join(directory,file)
+    stock = Stock(file_path)
+    stock.linear_reggression(omxhpi)
+    stock_list.append(stock)
         
-with open("StockObjects.dat", 'wb') as f:
+save_location = r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\StockObject.dat'
+with open(save_location, 'wb') as f:
     pickle.dump(stock_list, f)
 
 for n, stock in enumerate(stock_list):
