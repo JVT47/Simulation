@@ -39,25 +39,25 @@ class Stock:
         self.coef, self.intercept, self.residuals = linear_regression(other_stock.log_returns, 
                                                                       self.log_returns)
 
+if __name__ == "__main__":
+    omxhpi = Stock(r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\Index\OMXHPI.csv')
 
-omxhpi = Stock(r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\Index\OMXHPI.csv')
+    stock_list = []
+    directory = r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\Stocks'
+    for file in os.listdir(directory):
+        file_path = os.path.join(directory,file)
+        stock = Stock(file_path)
+        stock.linear_reggression(omxhpi)
+        stock_list.append(stock)
+            
+    save_location = r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\StockObject.dat'
+    with open(save_location, 'wb') as f:
+        pickle.dump(stock_list, f)
 
-stock_list = []
-directory = r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\Stocks'
-for file in os.listdir(directory):
-    file_path = os.path.join(directory,file)
-    stock = Stock(file_path)
-    stock.linear_reggression(omxhpi)
-    stock_list.append(stock)
-        
-save_location = r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\StockObject.dat'
-with open(save_location, 'wb') as f:
-    pickle.dump(stock_list, f)
+    for n, stock in enumerate(stock_list):
+        ax = plt.subplot(2,2,n+1)
 
-for n, stock in enumerate(stock_list):
-    ax = plt.subplot(2,2,n+1)
+        ax.hist(stock.residuals)
+        ax.set_title(stock.name)
 
-    ax.hist(stock.residuals)
-    ax.set_title(stock.name)
-
-plt.show()
+    plt.show()
