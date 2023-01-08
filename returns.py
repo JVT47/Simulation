@@ -52,6 +52,7 @@ if __name__ == "__main__":
             
     save_location = r'C:\Users\joona\OneDrive\Tiedostot\Simulaatioprojekti\Data\StockObject.dat'
     with open(save_location, 'wb') as f:
+        pickle.dump(omxhpi, f)
         pickle.dump(stock_list, f)
 
     for n, stock in enumerate(stock_list):
