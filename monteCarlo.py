@@ -33,10 +33,10 @@ for n, stock in enumerate(stock_list):
     stock_simulation = inverse_cdf(stock_simulation, np.array(stock.log_returns['Closing price']))
     stock_simulation = np.sum(stock_simulation, axis=1)
 
-    final_distribution = index_simulation + stock_simulation
+    final_distribution = stock.coef*index_simulation + stock.intercept + stock_simulation
 
     ax = plt.subplot(2,2, n+1)
     ax.hist(final_distribution)
     ax.set_title(stock.name)
 
-plt.show()
+plt.show() 
